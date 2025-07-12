@@ -69,3 +69,8 @@ This work contributes to the field of hybrid modeling by evaluating how PINNs ca
     * pandas : 2.2.2
     * matplotlib : 3.10.0
     * jax : 0.5.2
+
+## Contributors
+- **Lucie-Garance Barot**: Updating implementation from initial [PINN](https://github.com/brsynth/PINN) repository.
+
+  Email: lbarot@clipper.ens.psl.eu
