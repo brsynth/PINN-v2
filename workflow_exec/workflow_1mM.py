@@ -77,9 +77,9 @@ scheduler_hyperparameters = {"base_lr":1e-4,
                              "cycle_momentum":False}
 
 # Loss calculation method
-multiple_loss_method = "prior_loss_magouille"
-#multiple_loss_method = "soft_adapt_magouille"
-#multiple_loss_method = "wang_magouille"
+multiple_loss_method = "prior_loss_incr" 
+#multiple_loss_method = "soft_adapt_incr"
+#multiple_loss_method = "wang_incr"
 
 #Creating PINN
 pinn_cell = Pinn(ode_residual_dict=ODE_residual_dict_Millard,

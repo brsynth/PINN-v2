@@ -278,6 +278,10 @@ class Pinn(nn.Module):
 
         self.nb_observables = len(variables_data)
         self.nb_res=len(self.ode_residual_dict)
+        
+        # Making sure that the weight loss method is defined
+        if multi_loss_method not in ["prior_losses","prior_losses_incr","soft_adapt","soft_adapt_incr","wang","wang_incr", None]:
+            raise ValueError("Multi_loss_method is incorrect. Please pick a method among : \n","prior_losses","prior_losses_incr","soft_adapt","soft_adapt_incr","wang","wang_incr", "None" )
 
         # parameter use into method for weight loss component
         self.soft_adapt_beta = soft_adapt_beta
@@ -353,7 +357,7 @@ class Pinn(nn.Module):
                 layers.append( activation_function) #nn.Softplus()
             layers.append(nn.Linear(20, output_size))
 
-            layers.append(nn.Softplus()) 
+            layers.append(activation_function) 
             self.linear_softplus_stack = nn.Sequential(*layers)
 
         def forward(self, t_batch):
