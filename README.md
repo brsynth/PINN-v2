@@ -53,7 +53,7 @@ This work contributes to the field of hybrid modeling by evaluating how PINNs ca
 - `hands-on_LV.ipynb`  
   A guided tutorial notebook for using the code on a Lotka–Volterra equations.
 
-- `PINN_env.yml`
+- `PINN_proj.yml`
  Reacreating the same conda environment using this bash script in the current folder
  ```bash
  conda env create -f PINN_proj.yml
