@@ -56,7 +56,8 @@ This work contributes to the field of hybrid modeling by evaluating how PINNs ca
 - `PINN_env.yml`
  Reacreating the same conda environment using this bash script in the current folder
  ```bash
- conda activate pinn_env 
+ conda env create -f PINN_proj.yml
+ conda activate PINN_proj
  ```
 
 - `Additional specifications` 
