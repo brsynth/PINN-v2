@@ -13,7 +13,7 @@ from torch import nn
 from numpy import isnan
 from tqdm import tqdm
 from scipy.special import softmax
-from tools import nul_matrix_except_one_column_of_ones, normalize, denormalize, mean_error_percentage, init_weights_xavier
+from lib.tools import nul_matrix_except_one_column_of_ones, normalize, denormalize, mean_error_percentage, init_weights_xavier
 import torch.optim as optim
 
 class Pinn(nn.Module):
