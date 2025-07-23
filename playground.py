@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Optimal Fed-Batch Control of Induced Foreign Protein Production by Recombinant Bacteria
+# # Optimal Fed-Batch Control of Induced Foreign Protein Production by Recombinant Bacteria 
 
 # %%
 # ODE + Algebraic model template for fed-batch bioreactor (Monod + protein induction)
@@ -28,7 +28,7 @@ def algebraic_functions(mode: str, state: np.ndarray, params: Dict[str, float]) 
     X, S, I, P, V = state
 
     # Enforce non-negative substrate
-    S = max(S, 0.0)
+    #S = max(S, 0.0)
 
     # Determine feed rate F(t)
     if mode == "batch":
@@ -68,20 +68,17 @@ def fed_batch_odes(mode: str, t: float, state: np.ndarray, params: Dict[str, flo
     # correcting S(t) and dS(t) to avoid negative S (1)
     state[1] = max(state[1], 0.0)
     X, S, I, P, V = state
-    # correcting S(t) and dS(t) to avoid negative S (2)
-    #S = max(S, 0.0)
 
     alg = algebraic_functions(mode, state, params) 
 
+    
+
     dXdt = alg["mu"] * X - alg["D"] * X
     dSdt = - (1 / params["Y_XS"]) * alg["mu"] * X + alg["D"] * (params["S_in"] - S)
-
-    # correcting S(t) and dS(t) to avoid negative S (3)
-    #dSdt = 0.0 if S + dSdt < 0.0 else dSdt 
-
     dIdt = alg["D"] * (params["I_in"] - I) - params["k_d"] * I
     dPdt = alg["r_P"] - alg["D"] * P
     dVdt = alg["F"] if mode != "continuous" else 0.0  # Constant volume in continuous mode
+
 
     return np.array([dXdt, dSdt, dIdt, dPdt, dVdt])
 
@@ -110,7 +107,7 @@ def simulate_fed_batch(mode: str,params: Dict[str, float], initial_conditions: n
         t_span=t_span,
         y0=initial_conditions,
         t_eval=t_eval,
-        method="RK45"
+        method="LSODA"
     )
     return sol
 
@@ -184,12 +181,12 @@ df_init.to_csv(f"{input_folder}initial_conditions.csv", index=False)
 
 # %%
 ## Preruning the model
-mode = "fed-batch"
+mode = "continuous"
 params, init_conds = load_model_inputs(f"{input_folder}model_parameters_with_bounds.csv",f"{input_folder}initial_conditions.csv")
 
 # %%
 # Runing the model
-my_sol = simulate_fed_batch(mode,params, init_conds, (0.0,48.0))
+my_sol = simulate_fed_batch(mode,params, init_conds, (0.0,24.0))
 plot_fed_batch_results_separately(mode,my_sol,save_figs=True)
 
 
