@@ -1,0 +1,3 @@
+This folder contains model INPUTS only (no numerical solution).
+Main file: inputs.json
+Keys: params, initials, mode_name, mode_consts, t_span, t_eval, solver, meta.

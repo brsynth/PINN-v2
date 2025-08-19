@@ -1,0 +1,134 @@
+{
+  "Sub": {
+    "values": [
+      0.1
+    ],
+    "unit": "mol"
+  },
+  "Biomass": {
+    "values": [
+      0.05
+    ],
+    "unit": "g"
+  },
+  "Ca": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Cl": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Co": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Cu": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Fe": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Mg": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Mo": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Na": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Zn": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "K": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "Ni": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "NH4": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "P": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "S": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "CO2_l": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "CO2_g": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "O2_l": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "O2_g": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "H": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  },
+  "OH": {
+    "values": [
+      0.0
+    ],
+    "unit": "mol"
+  }
+}
