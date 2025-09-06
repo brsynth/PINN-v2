@@ -464,7 +464,11 @@ class Pinn(nn.Module):
         variable_fit_losses = []
         aux_fit_losses=[]
         learning_rates = []
-
+        
+        # DD!
+        r2_history_overall = []                       # list[float], overall R² per epoch (normalized space)
+        r2_history_per_var = [[] for _ in range(self.nb_observables)]  # list[list[float]]  
+        
         # Losses vectors for all epochs
         all_loss_residual_list = []
         all_loss_variable = []
@@ -494,7 +498,8 @@ class Pinn(nn.Module):
             all_loss_residual_list.append([l.item() for l in loss_residual_list])
             all_loss_variable.append([l.item() for l in loss_variable_fit_list])
             all_loss_aux.append([l.item() for l in loss_aux_list])
-
+            
+            
             # Weights on losses component depending on the method
             ## None method
             if self.multi_loss_method is None:
@@ -731,7 +736,6 @@ class Pinn(nn.Module):
             all_weights_aux.append(auxiliary_method_weights)
 
             # loss multiply by manual weights and weights from method above
-            
             loss_residual = sum([loss_residual_list[i]*
                                  residual_method_weights[i]*
                                  self.residual_weights[i]
@@ -740,7 +744,7 @@ class Pinn(nn.Module):
                                      variable_method_weights[i]*
                                      self.variable_fit_weights[i]
                                      for i in range(self.nb_observables)])
-            loss_aux=sum([loss_aux_list[i]*
+            loss_aux= sum([loss_aux_list[i]*
                                      auxiliary_method_weights[i]*
                                      self.auxiliary_fit_weights[i]
                                      for i in range(self.nb_res)])
@@ -755,6 +759,24 @@ class Pinn(nn.Module):
             loss.backward()
             self.optimizer.step()
             self.scheduler.step()
+            
+            # DD! -->
+            with torch.no_grad():
+                # Per-variable R² (normalized space)
+                # self.variables_norm.values() are GT (normalized); net_output[i] are predictions (normalized)
+                y_true_list = list(self.variables_norm.values())
+                y_pred_list = [net_output[i] for i, _ in enumerate(y_true_list)]
+
+                # Per-variable
+                for i, (yt, yp) in enumerate(zip(y_true_list, y_pred_list)):
+                    r2_i = r2_score(yt, yp).item()
+                    r2_history_per_var[i].append(r2_i)
+
+                # Overall: concatenate all variables (flatten) to get a single R²
+                y_true_all = torch.cat([yt.reshape(-1) for yt in y_true_list], dim=0)
+                y_pred_all = torch.cat([yp.reshape(-1) for yp in y_pred_list], dim=0)
+                r2_all = r2_score(y_true_all, y_pred_all).item()
+                r2_history_overall.append(r2_all)
 
             learned_parameters = [self.output_param_range(v,i).item()
                              for (i,v) in enumerate(self.ode_parameters.values())]
@@ -775,7 +797,10 @@ class Pinn(nn.Module):
                                                     net_output[i]
                            for (i,k) in enumerate(self.variables.keys())]
         
-        return parameter_errors, \
+        # DD!  r2_history_overall , r2_history_per_var
+        return r2_history_overall, \
+               r2_history_per_var , \
+               parameter_errors, \
                last_pred_unorm, \
                losses, \
                variable_fit_losses, \
@@ -783,7 +808,6 @@ class Pinn(nn.Module):
                aux_fit_losses, \
                all_learned_parameters, \
                learning_rates
-
 
     def output_param_range(self, param, index):
         """
@@ -993,3 +1017,15 @@ class Pinn(nn.Module):
             auxiliary_method_weights = [1]*self.nb_res
 
         return np.array(residual_method_weights), np.array(variable_method_weights), np.array(auxiliary_method_weights)
+
+
+# DD!
+def r2_score(y_true: torch.Tensor, y_pred: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:
+    """
+    Scalar R^2 for tensors of same shape.
+    Safe against zero-variance targets via clamp_min.
+    """
+    ss_res = torch.sum((y_true - y_pred) ** 2)
+    y_mean = torch.mean(y_true)
+    ss_tot = torch.sum((y_true - y_mean) ** 2).clamp_min(eps)
+    return 1.0 - ss_res / ss_tot

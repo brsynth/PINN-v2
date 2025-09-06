@@ -2,21 +2,21 @@
   "params": {
     "V_l": {
       "values": [
-        1.0
+        0.25
       ],
       "unit": "L"
     },
     "V_g": {
       "values": [
-        1.0
+        0.105
       ],
       "unit": "L"
     },
-    "K_L_a": {
+    "V_gas": {
       "values": [
-        50.0
+        0.05
       ],
-      "unit": "1/min"
+      "unit": "L"
     },
     "FractionO2": {
       "values": [
@@ -26,7 +26,7 @@
     },
     "FractionCO2": {
       "values": [
-        0.0
+        0.000407
       ],
       "unit": "-"
     },
@@ -38,13 +38,13 @@
     },
     "H_O2": {
       "values": [
-        0.0013
+        1.3e-08
       ],
       "unit": "mol/(L\u00b7Pa)"
     },
     "H_CO2": {
       "values": [
-        0.00034
+        3.4e-07
       ],
       "unit": "mol/(L\u00b7Pa)"
     },
@@ -54,27 +54,39 @@
       ],
       "unit": "J/(mol\u00b7K)"
     },
+    "T_Scale": {
+      "values": [
+        273.15
+      ],
+      "unit": "K"
+    },
+    "T_Celsius": {
+      "values": [
+        30.0
+      ],
+      "unit": "\u00b0C"
+    },
     "T_Kelvin": {
       "values": [
-        298.15
+        303.15
       ],
       "unit": "K"
     },
     "O2_Gasin": {
       "values": [
-        0.21
+        8.4424464460666
       ],
       "unit": "mol/L_gas"
     },
     "CO2_Gasin": {
       "values": [
-        0.0
+        0.016362265254995748
       ],
       "unit": "mol/L_gas"
     },
     "CSub_f": {
       "values": [
-        0.5
+        0.000664
       ],
       "unit": "mol/L"
     },
@@ -86,97 +98,97 @@
     },
     "CCl_f": {
       "values": [
-        0.0
+        0.000692
       ],
       "unit": "mol/L"
     },
     "CCo_f": {
       "values": [
-        0.0
+        3.3623278067871954e-06
       ],
       "unit": "mol/L"
     },
     "CCu_f": {
       "values": [
-        0.0
+        2.3462832526993991e-07
       ],
       "unit": "mol/L"
     },
     "CFe_f": {
       "values": [
-        0.0
+        7.193882322472968e-06
       ],
       "unit": "mol/L"
     },
     "CMg_f": {
       "values": [
-        0.0
+        0.0006491556918782508
       ],
       "unit": "mol/L"
     },
     "CMo_f": {
       "values": [
-        0.0
+        4.959550730831127e-07
       ],
       "unit": "mol/L"
     },
     "CNa_f": {
       "values": [
-        0.0
+        0.039367069148364
       ],
       "unit": "mol/L"
     },
     "CNa_b": {
       "values": [
-        0.0
+        4.0
       ],
       "unit": "mol/L"
     },
     "CZn_f": {
       "values": [
-        0.0
+        1.3910188865589325e-06
       ],
       "unit": "mol/L"
     },
     "CK_f": {
       "values": [
-        0.0
+        0.017635971503208
       ],
       "unit": "mol/L"
     },
     "CNi_f": {
       "values": [
-        0.0
+        3.3657199737810417e-07
       ],
       "unit": "mol/L"
     },
     "CNH4_f": {
       "values": [
-        0.0
+        0.024216886434912
       ],
       "unit": "mol/L"
     },
     "CP_f": {
       "values": [
-        0.0
+        0.03454229707536524
       ],
       "unit": "mol/L"
     },
     "CS_f": {
       "values": [
-        0.0
+        0.01278985023699524
       ],
       "unit": "mol/L"
     },
     "CH_f": {
       "values": [
-        0.0
+        0.057750237283482
       ],
       "unit": "mol/L"
     },
     "CH_a": {
       "values": [
-        0.0
+        8.64
       ],
       "unit": "mol/L"
     },
@@ -188,13 +200,13 @@
     },
     "COH_b": {
       "values": [
-        0.0
+        4.0
       ],
       "unit": "mol/L"
     },
     "Y_Sub": {
       "values": [
-        0.5
+        1.0
       ],
       "unit": "g_biomass/mol_Sub"
     },
@@ -206,123 +218,129 @@
     },
     "Y_Cl": {
       "values": [
-        1.0
+        9.16
       ],
       "unit": "mol/mol"
     },
     "Y_Co": {
       "values": [
-        1.0
+        8.773
       ],
       "unit": "mol/mol"
     },
     "Y_Cu": {
       "values": [
-        1.0
+        7.73
       ],
       "unit": "mol/mol"
     },
     "Y_Fe": {
       "values": [
-        1.0
+        14.46
       ],
       "unit": "mol/mol"
     },
     "Y_Mg": {
       "values": [
-        1.0
+        10.633
       ],
       "unit": "mol/mol"
     },
     "Y_Mo": {
       "values": [
-        1.0
+        7.773
       ],
       "unit": "mol/mol"
     },
     "Y_Na": {
       "values": [
-        1.0
+        7.467
       ],
       "unit": "mol/mol"
     },
     "Y_Zn": {
       "values": [
-        1.0
+        2.773e-08
       ],
       "unit": "mol/mol"
     },
     "Y_K": {
       "values": [
-        1.0
+        0.156
       ],
       "unit": "mol/mol"
     },
     "Y_Ni": {
       "values": [
-        1.0
+        6.773e-08
       ],
       "unit": "mol/mol"
     },
     "Y_NH4": {
       "values": [
-        1.0
+        0.006046
       ],
       "unit": "mol/mol"
     },
     "Y_P": {
       "values": [
-        1.0
+        0.01193
       ],
       "unit": "mol/mol"
     },
     "Y_S": {
       "values": [
-        0.05
+        0.0003809
       ],
       "unit": "mol/mol"
     },
     "Y_CO2": {
       "values": [
-        0.3
+        20.43
       ],
       "unit": "mol/g_biomass"
     },
     "Y_O2": {
       "values": [
-        0.2
+        18.74
       ],
       "unit": "mol/g_biomass"
     },
     "Y_H": {
       "values": [
-        0.5
+        0.09618
       ],
       "unit": "mol/g_biomass"
     },
     "mu_max": {
       "values": [
-        0.2
+        0.0075
       ],
       "unit": "1/min"
     },
     "K_subs": {
       "values": [
-        0.1
+        0.005
       ],
       "unit": "mol/L"
+    },
+    "K_L_a": {
+      "values": [
+        2.0
+      ],
+      "unit": "1/min"
     }
   },
   "initials": {
     "Sub": {
       "values": [
-        0.1
+        0.13
       ],
       "unit": "mol"
     },
     "Biomass": {
       "values": [
-        0.05
+        0.04267
       ],
       "unit": "g"
     },
@@ -334,109 +352,109 @@
     },
     "Cl": {
       "values": [
-        0.0
+        0.000173
       ],
       "unit": "mol"
     },
     "Co": {
       "values": [
-        0.0
+        8.405819516967989e-07
       ],
       "unit": "mol"
     },
     "Cu": {
       "values": [
-        0.0
+        5.865708131748498e-08
       ],
       "unit": "mol"
     },
     "Fe": {
       "values": [
-        0.0
+        1.798470580618242e-06
       ],
       "unit": "mol"
     },
     "Mg": {
       "values": [
-        0.0
+        0.0001622889229695627
       ],
       "unit": "mol"
     },
     "Mo": {
       "values": [
-        0.0
+        1.239887682707782e-07
       ],
       "unit": "mol"
     },
     "Na": {
       "values": [
-        0.0
+        0.009841767287091
       ],
       "unit": "mol"
     },
     "Zn": {
       "values": [
-        0.0
+        3.477547216397331e-07
       ],
       "unit": "mol"
     },
     "K": {
       "values": [
-        0.0
+        0.004408992875802
       ],
       "unit": "mol"
     },
     "Ni": {
       "values": [
-        0.0
+        8.414299934452604e-08
       ],
       "unit": "mol"
     },
     "NH4": {
       "values": [
-        0.0
+        0.006054221608728
       ],
       "unit": "mol"
     },
     "P": {
       "values": [
-        0.0
+        0.00863557426884131
       ],
       "unit": "mol"
     },
     "S": {
       "values": [
-        0.0
+        0.00319746255924881
       ],
       "unit": "mol"
     },
     "CO2_l": {
       "values": [
-        0.0
+        3.5053383749999997e-06
       ],
       "unit": "mol"
     },
     "CO2_g": {
       "values": [
-        0.0
+        0.0017180378517745538
       ],
       "unit": "mol"
     },
     "O2_l": {
       "values": [
-        0.0
+        6.915431250000001e-05
       ],
       "unit": "mol"
     },
     "O2_g": {
       "values": [
-        0.0
+        0.8864568768369933
       ],
       "unit": "mol"
     },
     "H": {
       "values": [
-        0.0
+        0.0144375593208705
       ],
       "unit": "mol"
     },
@@ -449,7 +467,7 @@
   },
   "mode_name": "fed-batch",
   "mode_consts": {
-    "Vf_const": 0.01,
+    "Vf_const": 0.0,
     "Vs_const": 0.0,
     "VGasIn_const": 0.1,
     "VOffGas_const": 0.1
