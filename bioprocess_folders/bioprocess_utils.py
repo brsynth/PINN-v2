@@ -1311,6 +1311,7 @@ def fit_parameters(
     if bounds is None:
         bounds = default_bounds(problem, span=10.0)
 
+    print(bounds)
     result = least_squares(
         fun=lambda th: residuals(th, problem),
         x0=x0,
@@ -1334,3 +1335,183 @@ def fit_parameters(
         "fitted_inputs": fitted_inputs,  # you can reuse with run_from_inputs for forward sims
     }
     return report
+
+# ---------- Data summary helpers ----------
+def summarize_dataset(
+    df: pd.DataFrame,
+    variables: Sequence[str],
+) -> Dict[str, pd.DataFrame]:
+    """
+    Return per-variable summary tables with columns:
+    time, mean, std, n, min, max
+    """
+    summaries: Dict[str, pd.DataFrame] = {}
+    # group by time across all experiments
+    for var in variables:
+        if var not in df.columns:
+            raise KeyError(f"Variable '{var}' not found in dataset.")
+        g = (
+            df[["time", var]]
+            .groupby("time", as_index=False)
+            .agg(mean=(var, "mean"),
+                 std=(var, "std"),
+                 n=(var, "count"),
+                 min=(var, "min"),
+                 max=(var, "max"))
+            .sort_values("time")
+            .reset_index(drop=True)
+        )
+        # fill std when single observation
+        g["std"] = g["std"].fillna(0.0)
+        summaries[var] = g
+    return summaries
+
+
+# ---------- Simulation helpers ----------
+def simulate_observables_on_grid(
+    inputs: dict,
+    observables: Sequence[str],
+    t_eval: np.ndarray,
+) -> Dict[str, np.ndarray]:
+    """
+    Simulate on t_eval and extract the requested observables by name.
+    """
+    payload = deepcopy(inputs)
+    payload["t_eval"] = list(np.asarray(t_eval, dtype=float))
+    sol = run_from_inputs(payload)
+    state_names = list(getattr(sol, "state_names", []))
+    out = {}
+    for var in observables:
+        if var not in state_names:
+            raise KeyError(f"State '{var}' not found in simulation state_names.")
+        i = state_names.index(var)
+        out[var] = np.asarray(sol.y[i, :], dtype=float)
+    return out
+
+
+# ---------- Main plotting function ----------
+def plot_dataset_with_traces(
+    csv_path: str | Path,
+    inputs_init: dict | None = None,
+    inputs_fit: dict | None = None,
+    inputs_path: str | Path | None = None,     # if you prefer to load inputs from disk
+    inputs_basename: str = "inputs",
+    observables: Sequence[str] = ("Biomass",),
+    envelope: str = "minmax",                  # "minmax" or "std" (mean ± std)
+    t_dense: Optional[np.ndarray] = None,      # if None, build a dense grid from meta or inputs
+    figsize: Tuple[int, int] = (9, 3),
+    scatter_kwargs: dict | None = None,        # e.g., dict(s=25, alpha=0.9)
+    init_kwargs: dict | None = None,           # e.g., dict(lw=2, ls="--")
+    fit_kwargs: dict | None = None,            # e.g., dict(lw=2)
+    alpha_envelope: float = 0.18,
+    legend: bool = True,
+) -> Tuple[plt.Figure, Dict[str, plt.Axes]]:
+    """
+    Plot, for each observable (one subplot per observable):
+      - mean scatter of the dataset,
+      - shaded envelope (min–max or mean ± std),
+      - initial trace (from inputs_init),
+      - fitted trace (from inputs_fit).
+    Returns (fig, axes_by_var).
+    """
+    csv_path = Path(csv_path)
+    df, meta = load_synthetic_dataset(csv_path)
+
+    # infer time unit and units for labels
+    time_unit = meta.get("time_unit", "min")
+    units = meta.get("units", {})  # dict var -> unit string
+
+    # Build summaries (mean, std, min, max by time)
+    summaries = summarize_dataset(df, observables)
+    # Default dense grid
+    if t_dense is None:
+        # Prefer meta grid if present, else build from data range
+        if "t_eval" in meta and isinstance(meta["t_eval"], (list, tuple)):
+            base_grid = np.asarray(meta["t_eval"], dtype=float)
+        else:
+            tmin = max(0.0, float(df["time"].min()))
+            tmax = float(df["time"].max())
+            base_grid = np.linspace(tmin, tmax, 400)
+        t_dense = base_grid
+
+    # If inputs dicts not provided, optionally load from disk
+    if inputs_init is None or inputs_fit is None:
+        if inputs_path is None:
+            # default: look next to the CSV under ./inputs/inputs.json
+            inputs_dir = csv_path.parent / "inputs"
+            inputs_path = inputs_dir / f"{inputs_basename}.json"
+        else:
+            inputs_path = Path(inputs_path)
+        loaded = load_model_inputs(inputs_path.parent, inputs_path.stem)
+        if inputs_init is None:
+            inputs_init = loaded
+        if inputs_fit is None:
+            inputs_fit = loaded
+
+    # Simulate traces on the same dense grid
+    init_traces = simulate_observables_on_grid(inputs_init, observables, t_dense) if inputs_init else {}
+    fit_traces  = simulate_observables_on_grid(inputs_fit,  observables, t_dense) if inputs_fit  else {}
+
+    # Styling defaults
+    scatter_kwargs = dict(s=22, alpha=0.9) | (scatter_kwargs or {})
+    init_kwargs    = dict(lw=2.0, ls="--") | (init_kwargs or {})
+    fit_kwargs     = dict(lw=2.2) | (fit_kwargs or {})
+
+    # Prepare subplots (one row per observable)
+    n = len(observables)
+    fig, axes = plt.subplots(nrows=n, ncols=1, figsize=(figsize[0], figsize[1] * n), sharex=True)
+    if n == 1:
+        axes = [axes]
+    axes_by_var = {}
+
+    for ax, var in zip(axes, observables):
+        summ = summaries[var]
+        t = summ["time"].to_numpy()
+        mu = summ["mean"].to_numpy()
+        sd = summ["std"].to_numpy()
+        vmin = summ["min"].to_numpy()
+        vmax = summ["max"].to_numpy()
+
+        # Envelope
+        if envelope == "std":
+            lo, hi = mu - sd, mu + sd
+            label_env = "mean ± sd"
+        elif envelope == "minmax":
+            lo, hi = vmin, vmax
+            label_env = "min–max"
+        else:
+            raise ValueError("envelope must be 'minmax' or 'std'.")
+
+        ax.fill_between(t, lo, hi, alpha=alpha_envelope, label=label_env, linewidth=0)
+
+        # Mean scatter
+        ax.scatter(t, mu, label="mean (data)", **scatter_kwargs)
+
+        # Initial trace
+        if var in init_traces:
+            ax.plot(t_dense, init_traces[var], label="initial trace", **init_kwargs)
+
+        # Fitted trace
+        if var in fit_traces:
+            ax.plot(t_dense, fit_traces[var], label="fitted trace", **fit_kwargs)
+
+        # Labels & cosmetics
+        yunit = f" [{units.get(var, '')}]" if units.get(var) else ""
+        ax.set_ylabel(f"{var}{yunit}")
+        ax.grid(True, alpha=0.25)
+
+        axes_by_var[var] = ax
+
+    axes[-1].set_xlabel(f"time [{time_unit}]")
+    if legend:
+        # one legend for all; place on last axis by default
+        handles, labels = axes[-1].get_legend_handles_labels()
+        if not handles:  # collect from all axes if last is empty
+            handles, labels = [], []
+            for ax in axes:
+                h, l = ax.get_legend_handles_labels()
+                handles += h; labels += l
+        axes[-1].legend(handles, labels, loc="best", frameon=True)
+
+    fig.tight_layout()
+    return fig, axes_by_var
