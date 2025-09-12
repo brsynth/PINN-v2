@@ -7,7 +7,7 @@
 # be used in the process, including both those in the gas phase of the system and
 # those dissolved in the liquid phase.
 # 
-# For further information, please check the [*BIOS_Pseudomonas_model.pdf*](misc/BIOS_Pseudomonas_model.pdf) document associated with this notebook in the *misc* folder.
+# For further information, please check the [*BIOS_Pseudomonas_model.pdf*](../misc/BIOS_Pseudomonas_model.pdf) document associated with this notebook in the *misc* folder.
 
 # Lorena Bioprocess Model — Modular ODEs with flexible fed modes
 # Requirements: numpy, scipy
@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 import pandas as pd
 import seaborn as sns
+import torch 
 
 #----------------------------------------------------------------------------------------------------------------------------
 # BIOPROCESS MODELING 
@@ -1515,3 +1516,185 @@ def plot_dataset_with_traces(
 
     fig.tight_layout()
     return fig, axes_by_var
+#----------------------------------------------------------------------------------------------------------------------------
+# PINN related UTILITIES (for the Bioprocess model only) 
+# =========================
+# Residual dict for the bioprocess model
+# =========================
+# Expected inputs (flat scalars in `value`):
+#   Volumes/flows: V_l, V_gas, Vf, Vs, VGasIn, VOffGas, Va, Vb
+#   Kinetics: mu_max, K_subs, K_L_a
+#   Gas props: FractionO2, FractionCO2, Pr, H_O2, H_CO2
+#   Gas in comps: O2_Gasin, CO2_Gasin
+#   Feeds (mol/L): CSub_f, CCa_f, CCl_f, CCo_f, CCu_f, CFe_f, CMg_f, CMo_f, CNa_f, CNa_b,
+#                  CZn_f, CK_f, CNi_f, CNH4_f, CP_f, CS_f, CH_f, CH_a, COH_f, COH_b
+#   Yields: Y_Sub, Y_Ca, Y_Cl, Y_Co, Y_Cu, Y_Fe, Y_Mg, Y_Mo, Y_Na, Y_Zn, Y_K, Y_Ni,
+#           Y_NH4, Y_P, Y_S, Y_CO2, Y_O2, Y_H
+#
+# Notes:
+# - Normalization follows the pattern of file1_tmp.py:
+#     ( d/dt - RHS ) / (max - min)
+# - We assume constant flows (Vf, Vs, VGasIn, VOffGas, Va, Vb) passed in value.
+#   If you want time-varying schedules, pass “effective” values per batch/epoch.
+# - The µ(Sub) and gas saturation formulas replicate the algebra in file2_tmp.py.
+#   (See d*dt functions and algebraics.) :contentReference[oaicite:2]{index=2}
+def _as_tensor_like(x, like):
+    """Return x as a tensor on like's device/dtype."""
+    if torch.is_tensor(x):
+        return x.to(dtype=like.dtype, device=like.device)
+    return torch.as_tensor(x, dtype=like.dtype, device=like.device)
+
+
+def _mu(Sub, value, eps=1e-12):
+    """
+    Tensor-safe Monod mu(Sub) = mu_max * Sub / (K_subs + Sub), with Sub >= 0.
+    Works for batched Sub (shape [T]) and for scalar/tensor params.
+    """
+    # ensure tensor
+    Sub_t = Sub if torch.is_tensor(Sub) else torch.as_tensor(Sub)
+
+    # clamp Sub >= 0 elementwise
+    Sub_eff = torch.clamp(Sub_t, min=0.0)
+
+    # make params tensors on the same device/dtype
+    mu_max = _as_tensor_like(value["mu_max"], Sub_eff)
+    K      = _as_tensor_like(value["K_subs"],  Sub_eff)
+
+    return mu_max * Sub_eff / (K + Sub_eff + eps)
+
+def _Csat_O2(value):
+    # partial pressure * Henry, as in file2_tmp (partial = Fraction * Pr)
+    return value["FractionO2"] * value["Pr"] * value["H_O2"]
+
+def _Csat_CO2(value):
+    return value["FractionCO2"] * value["Pr"] * value["H_CO2"]
+
+def _norm(var_name, num, min_var_dict, max_var_dict):
+    return num / (max_var_dict[var_name] - min_var_dict[var_name])
+
+def _trace_res(var_name, Cfeed_key, Y_key):
+    # Generic Eq. form used for most trace elements in file2_tmp.py (Eqs. 3–15):
+    # dX/dt = C_f*Vf - (X/V_l)*Vs - (1/Y)*mu(Sub)*Biomass  :contentReference[oaicite:3]{index=3}
+    return (lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm(var_name,
+                  d_dt_var_dict[var_name]
+                  - ( value[Cfeed_key] * value["Vf"]
+                      - (var_dict[var_name] / value["V_l"]) * value["Vs"]
+                      - (1.0 / value[Y_key]) * _mu(var_dict["Sub"], value) * var_dict["Biomass"] ),
+                  min_v, max_v))
+
+ODE_residual_dict_Bioprocess = {
+    # Biomass: dX/dt = µ(Sub)*X - (X/V_l)*Vs  (file2_tmp.py dBiomass_dt) :contentReference[oaicite:4]{index=4}
+    "ode_Biomass":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("Biomass",
+                  d_dt_var_dict["Biomass"]
+                  - ( _mu(var_dict["Sub"], value) * var_dict["Biomass"]
+                      - (var_dict["Biomass"] / value["V_l"]) * value["Vs"] ),
+                  min_v, max_v),
+
+    # Substrate: dSub/dt = CSub_f*Vf - (Sub/V_l)*Vs - (1/Y_Sub)*µ(Sub)*X (dSub_dt) :contentReference[oaicite:5]{index=5}
+    "ode_Sub":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("Sub",
+                  d_dt_var_dict["Sub"]
+                  - ( value["CSub_f"] * value["Vf"]
+                      - (var_dict["Sub"] / value["V_l"]) * value["Vs"]
+                      - (1.0 / value["Y_Sub"]) * _mu(var_dict["Sub"], value) * var_dict["Biomass"] ),
+                  min_v, max_v),
+
+    # Trace elements with the standard pattern
+    "ode_Ca":  _trace_res("Ca",  "CCa_f",  "Y_Ca"),
+    "ode_Cl":  _trace_res("Cl",  "CCl_f",  "Y_Cl"),
+    "ode_Co":  _trace_res("Co",  "CCo_f",  "Y_Co"),
+    "ode_Cu":  _trace_res("Cu",  "CCu_f",  "Y_Cu"),
+    "ode_Fe":  _trace_res("Fe",  "CFe_f",  "Y_Fe"),
+    "ode_Mg":  _trace_res("Mg",  "CMg_f",  "Y_Mg"),
+    "ode_Mo":  _trace_res("Mo",  "CMo_f",  "Y_Mo"),
+    "ode_Zn":  _trace_res("Zn",  "CZn_f",  "Y_Zn"),
+    "ode_K":   _trace_res("K",   "CK_f",   "Y_K"),
+    "ode_Ni":  _trace_res("Ni",  "CNi_f",  "Y_Ni"),
+    "ode_NH4": _trace_res("NH4", "CNH4_f", "Y_NH4"),
+    "ode_P":   _trace_res("P",   "CP_f",   "Y_P"),
+
+    # Sodium has base flow (dNa_dt): + CNa_b*Vb  (Eq. 10 logic) :contentReference[oaicite:6]{index=6}
+    "ode_Na":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("Na",
+                  d_dt_var_dict["Na"]
+                  - ( value["CNa_f"] * value["Vf"]
+                      + value["CNa_b"] * value["Vb"]
+                      - (var_dict["Na"] / value["V_l"]) * value["Vs"]
+                      - (1.0 / value["Y_Na"]) * _mu(var_dict["Sub"], value) * var_dict["Biomass"] ),
+                  min_v, max_v),
+
+    # Sulphate uses Y_S directly (dS_dt): ... - Y_S*µ*X  (Eq. 16) :contentReference[oaicite:7]{index=7}
+    "ode_S":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("S",
+                  d_dt_var_dict["S"]
+                  - ( value["CS_f"] * value["Vf"]
+                      - (var_dict["S"] / value["V_l"]) * value["Vs"]
+                      - value["Y_S"] * _mu(var_dict["Sub"], value) * var_dict["Biomass"] ),
+                  min_v, max_v),
+
+    # CO2_l: KLa*(Csat_CO2 - CO2_l)*V_l + (1/Y_CO2)*µ*X  (dCO2_l_dt) :contentReference[oaicite:8]{index=8}
+    "ode_CO2_l":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("CO2_l",
+                  d_dt_var_dict["CO2_l"]
+                  - ( value["K_L_a"] * (_Csat_CO2(value) - var_dict["CO2_l"]) * value["V_l"]
+                      + (1.0 / value["Y_CO2"]) * _mu(var_dict["Sub"], value) * var_dict["Biomass"] ),
+                  min_v, max_v),
+
+    # CO2_g: CO2_Gasin*VGasIn - KLa*(Csat-CO2_l)*V_l - (CO2_g/V_gas)*VOffGas  (dCO2_g_dt) :contentReference[oaicite:9]{index=9}
+    "ode_CO2_g":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("CO2_g",
+                  d_dt_var_dict["CO2_g"]
+                  - ( value["CO2_Gasin"] * value["VGasIn"]
+                      - value["K_L_a"] * (_Csat_CO2(value) - var_dict["CO2_l"]) * value["V_l"]
+                      - (var_dict["CO2_g"] / value["V_gas"]) * value["VOffGas"] ),
+                  min_v, max_v),
+
+    # O2_l: KLa*(Csat_O2 - O2_l)*V_l - (1/Y_O2)*µ*X  (dO2_l_dt) :contentReference[oaicite:10]{index=10}
+    "ode_O2_l":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("O2_l",
+                  d_dt_var_dict["O2_l"]
+                  - ( value["K_L_a"] * (_Csat_O2(value) - var_dict["O2_l"]) * value["V_l"]
+                      - (1.0 / value["Y_O2"]) * _mu(var_dict["Sub"], value) * var_dict["Biomass"] ),
+                  min_v, max_v),
+
+    # O2_g: O2_Gasin*VGasIn - KLa*(Csat-O2_l)*V_l - (O2_g/V_gas)*VOffGas (dO2_g_dt) :contentReference[oaicite:11]{index=11}
+    "ode_O2_g":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("O2_g",
+                  d_dt_var_dict["O2_g"]
+                  - ( value["O2_Gasin"] * value["VGasIn"]
+                      - value["K_L_a"] * (_Csat_O2(value) - var_dict["O2_l"]) * value["V_l"]
+                      - (var_dict["O2_g"] / value["V_gas"]) * value["VOffGas"] ),
+                  min_v, max_v),
+
+    # Acid/base species (Eqs. 21–22) :contentReference[oaicite:12]{index=12}
+    # H: CH_f*Vf + CH_a*Va - (H/V_l)*Vs + (1/Y_H)*µ*X
+    "ode_H":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("H",
+                  d_dt_var_dict["H"]
+                  - ( value["CH_f"] * value["Vf"]
+                      + value["CH_a"] * value["Va"]
+                      - (var_dict["H"] / value["V_l"]) * value["Vs"]
+                      + (1.0 / value["Y_H"]) * _mu(var_dict["Sub"], value) * var_dict["Biomass"] ),
+                  min_v, max_v),
+
+    # OH: COH_f*Vf + COH_b*Vb - (OH/V_l)*Vs
+    "ode_OH":
+        lambda var_dict, d_dt_var_dict, value, min_v, max_v:
+            _norm("OH",
+                  d_dt_var_dict["OH"]
+                  - ( value["COH_f"] * value["Vf"]
+                      + value["COH_b"] * value["Vb"]
+                      - (var_dict["OH"] / value["V_l"]) * value["Vs"] ),
+                  min_v, max_v),
+}
