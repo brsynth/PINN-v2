@@ -1287,6 +1287,7 @@ def fit_parameters(
     bounds: Optional[Tuple[np.ndarray, np.ndarray]] = None,
     x0: Optional[np.ndarray] = None,
     verbose: int = 2,
+    method = "trf"
 ) -> dict:
     """
     Run a bounded nonlinear least-squares fit (scipy.least_squares).
@@ -1302,7 +1303,6 @@ def fit_parameters(
         initial_names=initial_names,
         experiment_ids=experiment_ids,
         use_all_experiments=(experiment_ids is None),
-        method = "trf"
     )
 
     # seeds (x0) from inputs.json
