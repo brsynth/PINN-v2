@@ -1302,6 +1302,7 @@ def fit_parameters(
         initial_names=initial_names,
         experiment_ids=experiment_ids,
         use_all_experiments=(experiment_ids is None),
+        method = "trf"
     )
 
     # seeds (x0) from inputs.json
@@ -1317,7 +1318,7 @@ def fit_parameters(
         fun=lambda th: residuals(th, problem),
         x0=x0,
         bounds=bounds,
-        method="trf",     # robust and supports bounds
+        method=method,     # robust and supports bounds
         verbose=verbose,
         max_nfev=200,
     )

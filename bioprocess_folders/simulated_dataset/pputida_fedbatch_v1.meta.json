@@ -22,7 +22,7 @@
       0.0,
       600.0
     ],
-    "n_experiments": 20,
+    "n_experiments": 100,
     "n_timepoints": 80,
     "noise_cv": 0.05,
     "noise_cv_per_var": {},
