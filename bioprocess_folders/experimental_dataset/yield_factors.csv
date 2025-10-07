@@ -1,0 +1,20 @@
+name,value,unit,note
+Y_Ca,0.00416,mol/g_biomass,Calcium
+Y_Cl,0.00416,mol/g_biomass,Chloride
+Y_Co,0.002773,mol/g_biomass,Cobalt (Co2+)
+Y_Cu,0.002773,mol/g_biomass,Copper (Cu2+)
+Y_Fe,0.01446,mol/g_biomass,Iron (Fe2+)
+Y_K,0.156,mol/g_biomass,Potassium
+Y_Mg,0.006934,mol/g_biomass,Magnesium
+Y_Mo,0.002773,mol/g_biomass,Molybdate
+Y_Na,0.003467,mol/g_biomass,Sodium
+Y_NH4,10.46,mol/g_biomass,Ammonium
+Y_Ni,0.002773,mol/g_biomass,Nickel
+Y_O2,18.74,mol/g_biomass,Oxygen
+Y_P,0.9193,mol/g_biomass,Phosphate (as P)
+Y_S,0.1809,mol/g_biomass,Sulfate (as S)
+Y_Zn,0.002773,mol/g_biomass,Zinc
+Y_CO2,20.43,mol/g_biomass,Carbon dioxide produced
+Y_H2O,46.18,mol/g_biomass,Water produced
+Y_H,9.618,mol/g_biomass,Hydrogen (as H+)
+Y_Sub,0.1,g_biomass/mol_Sub,Derived from 10 mol glucose per g biomass

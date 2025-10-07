@@ -11,6 +11,10 @@
 
 # Lorena Bioprocess Model — Modular ODEs with flexible fed modes
 # Requirements: numpy, scipy
+#%---
+# Author: Danilo Dursoniah, PhD, Computational Biologist and Data Scientist, INRAe, BRS: ddursoniah@gmail.com
+# Date: 12/09/2025
+#%---
 
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Tuple, Iterable, Optional, Union, Sequence
