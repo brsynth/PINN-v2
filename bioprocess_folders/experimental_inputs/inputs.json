@@ -1,0 +1,643 @@
+{
+  "params": {
+    "V_l": {
+      "values": [
+        0.2
+      ],
+      "unit": "L"
+    },
+    "V_g": {
+      "values": [
+        0.105
+      ],
+      "unit": "L"
+    },
+    "V_gas": {
+      "values": [
+        0.05
+      ],
+      "unit": "L"
+    },
+    "FractionO2": {
+      "values": [
+        0.21
+      ],
+      "unit": "-"
+    },
+    "FractionCO2": {
+      "values": [
+        0.000407
+      ],
+      "unit": "-"
+    },
+    "Pr": {
+      "values": [
+        101325.0
+      ],
+      "unit": "Pa"
+    },
+    "H_O2": {
+      "values": [
+        1.3e-08
+      ],
+      "unit": "mol/(L\u00b7Pa)"
+    },
+    "H_CO2": {
+      "values": [
+        3.4e-07
+      ],
+      "unit": "mol/(L\u00b7Pa)"
+    },
+    "R": {
+      "values": [
+        8.314
+      ],
+      "unit": "J/(mol\u00b7K)"
+    },
+    "T_Scale": {
+      "values": [
+        273.15
+      ],
+      "unit": "K"
+    },
+    "T_Celsius": {
+      "values": [
+        30.0
+      ],
+      "unit": "\u00b0C"
+    },
+    "T_Kelvin": {
+      "values": [
+        303.15
+      ],
+      "unit": "K"
+    },
+    "O2_Gasin": {
+      "values": [
+        8.4424464460666
+      ],
+      "unit": "mol/L_gas"
+    },
+    "CO2_Gasin": {
+      "values": [
+        0.016362265254995748
+      ],
+      "unit": "mol/L_gas"
+    },
+    "CSub_f": {
+      "values": [
+        0.000664
+      ],
+      "unit": "mol/L"
+    },
+    "CCa_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "CCl_f": {
+      "values": [
+        0.000692
+      ],
+      "unit": "mol/L"
+    },
+    "CCo_f": {
+      "values": [
+        3.3623278067871954e-06
+      ],
+      "unit": "mol/L"
+    },
+    "CCu_f": {
+      "values": [
+        2.3462832526993991e-07
+      ],
+      "unit": "mol/L"
+    },
+    "CFe_f": {
+      "values": [
+        7.193882322472968e-06
+      ],
+      "unit": "mol/L"
+    },
+    "CMg_f": {
+      "values": [
+        0.0006491556918782508
+      ],
+      "unit": "mol/L"
+    },
+    "CMo_f": {
+      "values": [
+        4.959550730831127e-07
+      ],
+      "unit": "mol/L"
+    },
+    "CNa_f": {
+      "values": [
+        0.039367069148364
+      ],
+      "unit": "mol/L"
+    },
+    "CNa_b": {
+      "values": [
+        4.0
+      ],
+      "unit": "mol/L"
+    },
+    "CZn_f": {
+      "values": [
+        1.3910188865589325e-06
+      ],
+      "unit": "mol/L"
+    },
+    "CK_f": {
+      "values": [
+        0.017635971503208
+      ],
+      "unit": "mol/L"
+    },
+    "CNi_f": {
+      "values": [
+        3.3657199737810417e-07
+      ],
+      "unit": "mol/L"
+    },
+    "CNH4_f": {
+      "values": [
+        0.024216886434912
+      ],
+      "unit": "mol/L"
+    },
+    "CP_f": {
+      "values": [
+        0.03454229707536524
+      ],
+      "unit": "mol/L"
+    },
+    "CS_f": {
+      "values": [
+        0.01278985023699524
+      ],
+      "unit": "mol/L"
+    },
+    "CH_f": {
+      "values": [
+        0.057750237283482
+      ],
+      "unit": "mol/L"
+    },
+    "CH_a": {
+      "values": [
+        8.64
+      ],
+      "unit": "mol/L"
+    },
+    "COH_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "COH_b": {
+      "values": [
+        4.0
+      ],
+      "unit": "mol/L"
+    },
+    "Y_Sub": {
+      "values": [
+        0.1
+      ],
+      "unit": "g_biomass/mol_Sub"
+    },
+    "Y_Ca": {
+      "values": [
+        0.00416
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Cl": {
+      "values": [
+        0.00416
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Co": {
+      "values": [
+        0.002773
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Cu": {
+      "values": [
+        0.002773
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Fe": {
+      "values": [
+        0.01446
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Mg": {
+      "values": [
+        0.006934
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Mo": {
+      "values": [
+        0.002773
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Na": {
+      "values": [
+        0.003467
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Zn": {
+      "values": [
+        0.002773
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_K": {
+      "values": [
+        0.156
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_Ni": {
+      "values": [
+        0.002773
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_NH4": {
+      "values": [
+        10.46
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_P": {
+      "values": [
+        0.9193
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_S": {
+      "values": [
+        0.1809
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_CO2": {
+      "values": [
+        20.43
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_O2": {
+      "values": [
+        18.74
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "Y_H": {
+      "values": [
+        9.618
+      ],
+      "unit": "mol/g_biomass"
+    },
+    "mu_max": {
+      "values": [
+        0.008333333333333333
+      ],
+      "unit": "1/min"
+    },
+    "K_subs": {
+      "values": [
+        0.1
+      ],
+      "unit": "g/L"
+    },
+    "K_L_a": {
+      "values": [
+        2.0
+      ],
+      "unit": "1/min"
+    },
+    "T_celsius": {
+      "values": [
+        30.0
+      ],
+      "unit": "degC"
+    },
+    "y_O2": {
+      "values": [
+        0.21
+      ],
+      "unit": "1"
+    },
+    "y_CO2": {
+      "values": [
+        0.0004
+      ],
+      "unit": "1"
+    },
+    "P_atm": {
+      "values": [
+        1.0
+      ],
+      "unit": "atm"
+    },
+    "C_Sub_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Na_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_NH4_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_P_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_S_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_K_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Mg_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Ca_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Cl_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Co_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Cu_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Fe_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Mo_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Ni_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Zn_f": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_Na_b": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "C_H_a": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Y_H2O": {
+      "values": [
+        46.18
+      ],
+      "unit": "mol/g_biomass"
+    }
+  },
+  "initials": {
+    "Biomass": {
+      "values": [
+        0.05
+      ],
+      "unit": "g/L"
+    },
+    "Sub": {
+      "values": [
+        10.0
+      ],
+      "unit": "g/L"
+    },
+    "O2_l": {
+      "values": [
+        0.00025
+      ],
+      "unit": "mol/L"
+    },
+    "CO2_l": {
+      "values": [
+        1.5e-05
+      ],
+      "unit": "mol/L"
+    },
+    "O2_g": {
+      "values": [
+        0.21
+      ],
+      "unit": "mol frac"
+    },
+    "CO2_g": {
+      "values": [
+        0.0004
+      ],
+      "unit": "mol frac"
+    },
+    "Na": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "NH4": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "P": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "S": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "K": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Mg": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Ca": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Cl": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Co": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Cu": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Fe": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Mo": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Ni": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "Zn": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "H": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    },
+    "OH": {
+      "values": [
+        0.0
+      ],
+      "unit": "mol/L"
+    }
+  },
+  "mode_name": "batch",
+  "mode_consts": {
+    "Vf_const": 0.0,
+    "Vs_const": 0.0,
+    "VGasIn_const": 0.0,
+    "VOffGas_const": 0.0
+  },
+  "t_span": [
+    0.0,
+    600.0
+  ],
+  "t_eval": null,
+  "solver": {
+    "method": "LSODA",
+    "rtol": 1e-06,
+    "atol": 1e-09
+  },
+  "meta": {
+    "state_order": [
+      "Sub",
+      "Biomass",
+      "Ca",
+      "Cl",
+      "Co",
+      "Cu",
+      "Fe",
+      "Mg",
+      "Mo",
+      "Na",
+      "Zn",
+      "K",
+      "Ni",
+      "NH4",
+      "P",
+      "S",
+      "CO2_l",
+      "CO2_g",
+      "O2_l",
+      "O2_g",
+      "H",
+      "OH"
+    ]
+  }
+}
